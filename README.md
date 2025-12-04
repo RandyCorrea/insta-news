@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# InstaNews - Plataforma de Noticias Estilo Instagram
 
-## Getting Started
+Esta es una aplicación web estática construida con Next.js que imita la estética de Instagram para presentar noticias.
 
-First, run the development server:
+## Características
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Diseño Mobile-First**: Estética similar a Instagram.
+- **Feed de Noticias**: Scroll infinito (simulado) con tarjetas visuales.
+- **Páginas de Detalle**: Cada noticia tiene su propia URL para compartir.
+- **SEO Optimizado**: Meta tags dinámicos para Twitter y OpenGraph.
+- **CMS Integrado**: Panel de administración secreto (`/admin-secret-access`) para crear noticias.
+- **Seguridad**: Bloqueo de acceso tras 3 intentos fallidos.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Cómo Usar el CMS
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Accede a `/admin-secret-access`.
+2. Contraseña por defecto: `admin` (Cámbiala en el código si es necesario).
+3. Crea una nueva noticia.
+4. **IMPORTANTE**: Como es una web estática, al guardar una noticia, descarga el archivo `posts.json` y súbelo a la carpeta `data/` en tu repositorio de GitHub para que los cambios se reflejen en la web pública.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Despliegue
 
-## Learn More
+Este proyecto está configurado para desplegarse automáticamente en GitHub Pages.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Ve a `Settings` > `Pages` en tu repositorio de GitHub.
+2. En "Build and deployment", selecciona "GitHub Actions".
+3. El workflow se encargará del resto.
