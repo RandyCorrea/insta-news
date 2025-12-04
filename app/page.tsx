@@ -6,7 +6,9 @@ import postsData from '@/data/posts.json';
 import { Post } from '@/lib/types';
 
 export default function Home() {
-  const posts: Post[] = postsData as Post[];
+  const posts: Post[] = (postsData as Post[])
+    .filter(post => new Date(post.createdAt) <= new Date()) // Filter future posts
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); // Sort new to old
 
   return (
     <MobileContainer>
