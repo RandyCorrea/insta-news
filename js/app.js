@@ -41,6 +41,9 @@ function createPostCard(post) {
         ? post.description.substring(0, 100) + '...'
         : post.description;
 
+    // Determine aspect ratio: videos 16:9, images 4:5
+    const aspectRatio = post.videoUrl ? 'aspect-video' : 'aspect-[4/5]';
+
     return `
         <article class="post-card bg-white dark:bg-black mb-4 border-b border-gray-200 dark:border-gray-800 pb-4">
             <!-- Header -->
@@ -59,18 +62,22 @@ function createPostCard(post) {
             </div>
 
             <!-- Media -->
-            <div class="relative aspect-[4/5] w-full bg-gray-100 dark:bg-gray-900 overflow-hidden">
+            <div class="relative ${aspectRatio} w-full bg-gray-100 dark:bg-gray-900 overflow-hidden">
                 ${post.videoUrl ? `
-                    <iframe 
-                        src="${getEmbedUrl(post.videoUrl)}" 
-                        class="w-full h-full" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    <iframe
+                        src="${getEmbedUrl(post.videoUrl)}"
+                        class="w-full h-full"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen>
                     </iframe>
-                ` : `
+                ` : (post.imageUrl ? `
                     <img src="${post.imageUrl}" alt="${post.title}" class="w-full h-full object-cover">
-                `}
+                ` : `
+                    <div class="w-full h-full flex items-center justify-center text-gray-400">
+                        <i data-lucide="image" class="w-16 h-16"></i>
+                    </div>
+                `)}
             </div>
 
             <!-- Actions -->
@@ -80,7 +87,7 @@ function createPostCard(post) {
                         <button onclick="toggleLike('${post.id}')" id="like-${post.id}">
                             <i data-lucide="heart" class="w-6 h-6 ${isLiked ? 'fill-red-500 text-red-500' : ''}"></i>
                         </button>
-                        <button onclick="openShareModal('${post.slug}', '${post.title.replace(/'/g, "\\'")}')">
+                        <button onclick="openShareModal('${post.slug}', \`${post.title.replace(/`/g, '\\`')}\`)">
                             <i data-lucide="send" class="w-6 h-6"></i>
                         </button>
                     </div>
@@ -90,15 +97,15 @@ function createPostCard(post) {
                 </div>
 
                 <div class="font-semibold text-sm mb-1" id="likes-${post.id}">${post.likes + (isLiked ? 1 : 0)} Me gusta</div>
-                
+
                 <div class="text-sm mb-1">
                     <span class="font-semibold mr-2">${post.author}</span>
                     <span>${post.title}</span>
                 </div>
-                
+
                 <div class="text-sm text-gray-500 dark:text-gray-400">
                     ${shortDesc}
-                    ${post.description.length > 100 ? `<a href="post.html?slug=${post.slug}" class="text-gray-400 font-medium">Ver más</a>` : ''}
+                    ${post.description.length > 100 ? ` <a href="post.html?slug=${post.slug}" class="text-gray-600 dark:text-gray-300 font-medium">Ver más</a>` : ''}
                 </div>
 
                 <a href="post.html?slug=${post.slug}" class="text-xs text-gray-400 dark:text-gray-500 mt-1 block uppercase">

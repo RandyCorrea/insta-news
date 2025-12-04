@@ -309,8 +309,13 @@ function savePost() {
     const videoUrl = document.getElementById('videoInput').value;
     const scheduledDate = document.getElementById('scheduleInput').value;
 
-    if (!title || !description || !content || !imageUrl) {
-        alert('Por favor complete todos los campos obligatorios');
+    if (!title || !description || !content) {
+        alert('Por favor complete título, descripción y contenido');
+        return;
+    }
+
+    if (!imageUrl && !videoUrl) {
+        alert('Debe proporcionar una imagen o un video');
         return;
     }
 
@@ -323,13 +328,13 @@ function savePost() {
                 title,
                 description,
                 content,
-                imageUrl,
+                imageUrl: imageUrl || posts[postIndex].imageUrl,
                 videoUrl: videoUrl || undefined,
                 createdAt: scheduledDate ? new Date(scheduledDate).toISOString() : posts[postIndex].createdAt,
                 slug: title.toLowerCase().replace(/[^a-z0-9]+/g, '-')
             };
         }
-        alert('✅ Noticia actualizada. No olvides descargar el JSON actualizado.');
+        alert('✅ Noticia actualizada. Presiona el botón verde de Descargar para guardar los cambios.');
     } else {
         // Create new post
         const newPost = {
@@ -338,7 +343,7 @@ function savePost() {
             title,
             description,
             content,
-            imageUrl,
+            imageUrl: imageUrl || '',
             videoUrl: videoUrl || undefined,
             createdAt: scheduledDate ? new Date(scheduledDate).toISOString() : new Date().toISOString(),
             author: 'Admin',
@@ -346,7 +351,7 @@ function savePost() {
         };
 
         posts.unshift(newPost);
-        alert('✅ Noticia creada. No olvides descargar el JSON actualizado y subirlo al repositorio.');
+        alert('✅ Noticia creada. Presiona el botón verde de Descargar para guardar los cambios.');
     }
 
     renderPostsList();
@@ -364,4 +369,6 @@ function downloadJSON() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+
+    alert('💾 Archivo descargado. Ahora ve a GitHub:\n\n1. Navega a tu repositorio\n2. Entra a la carpeta "data"\n3. Haz clic en "posts.json"\n4. Clic en el icono de lápiz (Edit)\n5. Borra todo el contenido\n6. Pega el contenido del archivo descargado\n7. Scroll abajo y clic en "Commit changes"\n\n✨ Tu web se actualizará automáticamente en 1-2 minutos');
 }
