@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { MobileContainer } from '@/components/layout/MobileContainer';
 import { Lock, AlertTriangle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 import { Dashboard } from '@/components/admin/Dashboard';
 
@@ -19,31 +18,33 @@ export default function AdminPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Check lockout status
-        const storedLockout = localStorage.getItem('admin_lockout');
-        if (storedLockout) {
-            const lockoutTime = parseInt(storedLockout, 10);
-            if (Date.now() < lockoutTime) {
-                setLockoutUntil(lockoutTime);
-            } else {
-                localStorage.removeItem('admin_lockout');
-                localStorage.removeItem('admin_attempts');
+        if (typeof window !== 'undefined') {
+            // Check lockout status
+            const storedLockout = localStorage.getItem('admin_lockout');
+            if (storedLockout) {
+                const lockoutTime = parseInt(storedLockout, 10);
+                if (Date.now() < lockoutTime) {
+                    // eslint-disable-next-line
+                    setLockoutUntil(lockoutTime);
+                } else {
+                    localStorage.removeItem('admin_lockout');
+                    localStorage.removeItem('admin_attempts');
+                }
             }
-        }
 
-        // Check attempts
-        const storedAttempts = localStorage.getItem('admin_attempts');
-        if (storedAttempts) {
-            setAttempts(parseInt(storedAttempts, 10));
-        }
+            // Check attempts
+            const storedAttempts = localStorage.getItem('admin_attempts');
+            if (storedAttempts) {
+                setAttempts(parseInt(storedAttempts, 10));
+            }
 
-        // Check session
-        const session = sessionStorage.getItem('admin_session');
-        if (session === 'true') {
-            setIsAuthenticated(true);
+            // Check session
+            const session = sessionStorage.getItem('admin_session');
+            if (session === 'true') {
+                setIsAuthenticated(true);
+            }
+            setLoading(false);
         }
-
-        setLoading(false);
     }, []);
 
     const handleLogin = (e: React.FormEvent) => {

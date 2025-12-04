@@ -16,7 +16,7 @@ export function PostCard({ post }: PostCardProps) {
     const [isLiked, setIsLiked] = useState(false);
     const [showShareMenu, setShowShareMenu] = useState(false);
 
-    const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/posts/${post.slug}` : '';
+    const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/insta-news/posts/${post.slug}` : '';
 
     const handleShare = async () => {
         if (navigator.share) {

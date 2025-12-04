@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Post } from '@/lib/types';
 import postsData from '@/data/posts.json';
-import { Plus, Save, Image as ImageIcon, Video, Calendar, Copy, Download } from 'lucide-react';
+import { Plus, Download } from 'lucide-react';
 import { format } from 'date-fns';
 
 export function Dashboard() {

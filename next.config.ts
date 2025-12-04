@@ -1,12 +1,8 @@
-import type { NextConfig } from "next";
-
 const nextConfig = {
   output: 'export',
+  basePath: '/insta-news',
   images: {
     unoptimized: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
   },
 };
 

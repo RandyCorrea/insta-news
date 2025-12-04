@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Home, Search, PlusSquare, User, Lock } from 'lucide-react';
+import { Home, Search, PlusSquare, User } from 'lucide-react';
 
 export function BottomNav() {
     return (
