@@ -1,6 +1,7 @@
 // Main App JavaScript
 let posts = [];
 let likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '[]');
+let savedPosts = JSON.parse(localStorage.getItem('savedPosts') || '[]');
 
 // Load posts from JSON
 async function loadPosts() {
@@ -32,7 +33,13 @@ function renderFeed() {
 // Create post card HTML
 function createPostCard(post) {
     const isLiked = likedPosts.includes(post.id);
+    const isSaved = savedPosts.includes(post.id);
     const timeAgo = getTimeAgo(post.createdAt);
+
+    // Truncate description for feed
+    const shortDesc = post.description.length > 100
+        ? post.description.substring(0, 100) + '...'
+        : post.description;
 
     return `
         <article class="post-card bg-white dark:bg-black mb-4 border-b border-gray-200 dark:border-gray-800 pb-4">
@@ -53,8 +60,17 @@ function createPostCard(post) {
 
             <!-- Media -->
             <div class="relative aspect-[4/5] w-full bg-gray-100 dark:bg-gray-900 overflow-hidden">
-                <img src="${post.imageUrl}" alt="${post.title}" class="w-full h-full object-cover">
-                ${post.videoUrl ? '<div class="absolute inset-0 flex items-center justify-center bg-black/20"><span class="text-white font-bold">VIDEO</span></div>' : ''}
+                ${post.videoUrl ? `
+                    <iframe 
+                        src="${getEmbedUrl(post.videoUrl)}" 
+                        class="w-full h-full" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                ` : `
+                    <img src="${post.imageUrl}" alt="${post.title}" class="w-full h-full object-cover">
+                `}
             </div>
 
             <!-- Actions -->
@@ -64,15 +80,12 @@ function createPostCard(post) {
                         <button onclick="toggleLike('${post.id}')" id="like-${post.id}">
                             <i data-lucide="heart" class="w-6 h-6 ${isLiked ? 'fill-red-500 text-red-500' : ''}"></i>
                         </button>
-                        <a href="post.html?slug=${post.slug}">
-                            <i data-lucide="message-circle" class="w-6 h-6"></i>
-                        </a>
-                        <button onclick="openShareModal('${post.slug}', '${post.title}')">
+                        <button onclick="openShareModal('${post.slug}', '${post.title.replace(/'/g, "\\'")}')">
                             <i data-lucide="send" class="w-6 h-6"></i>
                         </button>
                     </div>
-                    <button>
-                        <i data-lucide="bookmark" class="w-6 h-6"></i>
+                    <button onclick="toggleSave('${post.id}')" id="save-${post.id}">
+                        <i data-lucide="bookmark" class="w-6 h-6 ${isSaved ? 'fill-black dark:fill-white' : ''}"></i>
                     </button>
                 </div>
 
@@ -83,8 +96,9 @@ function createPostCard(post) {
                     <span>${post.title}</span>
                 </div>
                 
-                <div class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-                    ${post.description}
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    ${shortDesc}
+                    ${post.description.length > 100 ? `<a href="post.html?slug=${post.slug}" class="text-gray-400 font-medium">Ver más</a>` : ''}
                 </div>
 
                 <a href="post.html?slug=${post.slug}" class="text-xs text-gray-400 dark:text-gray-500 mt-1 block uppercase">
@@ -93,6 +107,29 @@ function createPostCard(post) {
             </div>
         </article>
     `;
+}
+
+// Get embed URL for videos
+function getEmbedUrl(url) {
+    // YouTube
+    const ytMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+    if (ytMatch && ytMatch[1]) {
+        return `https://www.youtube.com/embed/${ytMatch[1]}`;
+    }
+
+    // Vimeo
+    const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+    if (vimeoMatch && vimeoMatch[1]) {
+        return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+    }
+
+    // Rumble
+    const rumbleMatch = url.match(/rumble\.com\/([^\/]+)/);
+    if (rumbleMatch && rumbleMatch[1]) {
+        return `https://rumble.com/embed/${rumbleMatch[1]}`;
+    }
+
+    return url;
 }
 
 // Toggle like
@@ -122,6 +159,23 @@ function toggleLike(postId) {
     }
 
     setTimeout(() => icon.classList.remove('heart-liked'), 300);
+}
+
+// Toggle save
+function toggleSave(postId) {
+    const index = savedPosts.indexOf(postId);
+    const saveBtn = document.getElementById(`save-${postId}`);
+    const icon = saveBtn.querySelector('i');
+
+    if (index > -1) {
+        savedPosts.splice(index, 1);
+        icon.classList.remove('fill-black', 'dark:fill-white');
+    } else {
+        savedPosts.push(postId);
+        icon.classList.add('fill-black', 'dark:fill-white');
+    }
+
+    localStorage.setItem('savedPosts', JSON.stringify(savedPosts));
 }
 
 // Share functionality
@@ -175,6 +229,76 @@ function copyLink(url) {
     closeShareModal();
 }
 
+// Settings modal
+function openSettings() {
+    document.getElementById('settingsModal').classList.remove('hidden');
+}
+
+function closeSettings() {
+    document.getElementById('settingsModal').classList.add('hidden');
+}
+
+// Profile modal
+function openProfile() {
+    const modal = document.getElementById('profileModal');
+    modal.classList.remove('hidden');
+    renderProfilePosts('liked');
+}
+
+function closeProfile() {
+    document.getElementById('profileModal').classList.add('hidden');
+}
+
+function switchProfileTab(tab) {
+    const tabLiked = document.getElementById('tabLiked');
+    const tabSaved = document.getElementById('tabSaved');
+
+    if (tab === 'liked') {
+        tabLiked.classList.add('border-black', 'dark:border-white');
+        tabLiked.classList.remove('text-gray-400', 'border-transparent');
+        tabSaved.classList.remove('border-black', 'dark:border-white');
+        tabSaved.classList.add('text-gray-400', 'border-transparent');
+    } else {
+        tabSaved.classList.add('border-black', 'dark:border-white');
+        tabSaved.classList.remove('text-gray-400', 'border-transparent');
+        tabLiked.classList.remove('border-black', 'dark:border-white');
+        tabLiked.classList.add('text-gray-400', 'border-transparent');
+    }
+
+    renderProfilePosts(tab);
+}
+
+function renderProfilePosts(tab) {
+    const likedContainer = document.getElementById('likedPosts');
+    const savedContainer = document.getElementById('savedPosts');
+
+    if (tab === 'liked') {
+        likedContainer.classList.remove('hidden');
+        savedContainer.classList.add('hidden');
+
+        const likedPostsData = posts.filter(p => likedPosts.includes(p.id));
+        likedContainer.innerHTML = likedPostsData.length > 0
+            ? likedPostsData.map(post => `
+                <a href="post.html?slug=${post.slug}" class="aspect-square bg-gray-200 dark:bg-gray-800 overflow-hidden">
+                    <img src="${post.imageUrl}" alt="${post.title}" class="w-full h-full object-cover">
+                </a>
+            `).join('')
+            : '<p class="col-span-3 text-center text-gray-500 py-8">No tienes likes aún</p>';
+    } else {
+        savedContainer.classList.remove('hidden');
+        likedContainer.classList.add('hidden');
+
+        const savedPostsData = posts.filter(p => savedPosts.includes(p.id));
+        savedContainer.innerHTML = savedPostsData.length > 0
+            ? savedPostsData.map(post => `
+                <a href="post.html?slug=${post.slug}" class="aspect-square bg-gray-200 dark:bg-gray-800 overflow-hidden">
+                    <img src="${post.imageUrl}" alt="${post.title}" class="w-full h-full object-cover">
+                </a>
+            `).join('')
+            : '<p class="col-span-3 text-center text-gray-500 py-8">No tienes guardados aún</p>';
+    }
+}
+
 // Load single post
 async function loadSinglePost() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -211,7 +335,7 @@ async function loadSinglePost() {
             <div class="mb-4">${createPostCard(post)}</div>
             <div class="px-4 pb-8">
                 <h1 class="text-2xl font-bold mb-4">${post.title}</h1>
-                <div class="prose dark:prose-invert max-w-none">
+                <div class="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed">
                     <p>${post.content}</p>
                 </div>
             </div>

@@ -2,6 +2,7 @@
 const ADMIN_PASSWORD = 'admin';
 let posts = [];
 let isAuthenticated = false;
+let editingPostId = null;
 
 // Check authentication on load
 window.addEventListener('DOMContentLoaded', () => {
@@ -48,6 +49,7 @@ function setupEventListeners() {
     const saveBtn = document.getElementById('saveBtn');
     const downloadBtn = document.getElementById('downloadBtn');
     const imageInput = document.getElementById('imageInput');
+    const imageFileInput = document.getElementById('imageFileInput');
     const videoInput = document.getElementById('videoInput');
 
     if (loginForm) {
@@ -75,6 +77,10 @@ function setupEventListeners() {
         imageInput.addEventListener('paste', handleImagePaste);
     }
 
+    if (imageFileInput) {
+        imageFileInput.addEventListener('change', handleImageFileUpload);
+    }
+
     if (videoInput) {
         videoInput.addEventListener('input', handleVideoInput);
     }
@@ -85,7 +91,6 @@ function handleLogin(e) {
 
     const password = document.getElementById('passwordInput').value;
     const errorMsg = document.getElementById('errorMessage');
-    const lockoutMsg = document.getElementById('lockoutMessage');
 
     // Check if locked out
     const lockout = localStorage.getItem('admin_lockout');
@@ -153,18 +158,32 @@ function renderPostsList() {
                     <p class="text-xs text-gray-500">${new Date(post.createdAt).toLocaleDateString()}</p>
                     <p class="text-xs text-gray-400 mt-1 truncate">${post.description}</p>
                 </div>
+                <div class="flex flex-col gap-2">
+                    <button onclick="editPost('${post.id}')" class="p-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded">
+                        <i data-lucide="edit-2" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="deletePost('${post.id}')" class="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
             </div>
         `).join('');
+
+    lucide.createIcons();
 }
 
 function showCreateForm() {
+    editingPostId = null;
     document.getElementById('postsList').classList.add('hidden');
     document.getElementById('createForm').classList.remove('hidden');
+    document.getElementById('formTitle').textContent = 'Nueva Noticia';
+    clearForm();
 }
 
 function hideCreateForm() {
     document.getElementById('postsList').classList.remove('hidden');
     document.getElementById('createForm').classList.add('hidden');
+    editingPostId = null;
     clearForm();
 }
 
@@ -173,6 +192,7 @@ function clearForm() {
     document.getElementById('descriptionInput').value = '';
     document.getElementById('contentInput').value = '';
     document.getElementById('imageInput').value = '';
+    document.getElementById('imageFileInput').value = '';
     document.getElementById('videoInput').value = '';
     document.getElementById('scheduleInput').value = '';
     document.getElementById('imagePreview').classList.add('hidden');
@@ -198,12 +218,36 @@ function handleImagePaste(e) {
                     const base64 = event.target.result;
                     document.getElementById('imageInput').value = base64;
                     showImagePreview(base64);
-                    alert('Imagen pegada. Nota: Las imágenes en Base64 son pesadas. Se recomienda usar URLs externas para producción.');
                 };
                 reader.readAsDataURL(blob);
             }
         }
     }
+}
+
+function handleImageFileUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        alert('Por favor selecciona un archivo de imagen');
+        return;
+    }
+
+    // Save to images folder (simulated - in reality you'd upload to server or encode)
+    const timestamp = Date.now();
+    const filename = `${timestamp}-${file.name.replace(/[^a-z0-9.]/gi, '-').toLowerCase()}`;
+    const imagePath = `images/${filename}`;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        // Use base64 for now (in production, upload to images/ folder via GitHub API or similar)
+        const base64 = event.target.result;
+        document.getElementById('imageInput').value = base64;
+        showImagePreview(base64);
+        alert('Imagen cargada. Recuerda descargar el JSON actualizado y subirlo a GitHub junto con la imagen en la carpeta /images/ si usas URL local.');
+    };
+    reader.readAsDataURL(file);
 }
 
 function showImagePreview(url) {
@@ -224,6 +268,39 @@ function handleVideoInput(e) {
     }
 }
 
+function editPost(postId) {
+    const post = posts.find(p => p.id === postId);
+    if (!post) return;
+
+    editingPostId = postId;
+
+    // Fill form with post data
+    document.getElementById('titleInput').value = post.title;
+    document.getElementById('descriptionInput').value = post.description;
+    document.getElementById('contentInput').value = post.content;
+    document.getElementById('imageInput').value = post.imageUrl;
+    document.getElementById('videoInput').value = post.videoUrl || '';
+    document.getElementById('scheduleInput').value = post.createdAt.replace('Z', '').slice(0, 16);
+
+    if (post.imageUrl) {
+        showImagePreview(post.imageUrl);
+    }
+
+    document.getElementById('formTitle').textContent = 'Editar Noticia';
+    document.getElementById('postsList').classList.add('hidden');
+    document.getElementById('createForm').classList.remove('hidden');
+}
+
+function deletePost(postId) {
+    if (!confirm('¿Estás seguro de eliminar esta publicación? Esta acción no se puede deshacer.')) {
+        return;
+    }
+
+    posts = posts.filter(p => p.id !== postId);
+    renderPostsList();
+    alert('✅ Publicación eliminada. No olvides descargar el JSON actualizado.');
+}
+
 function savePost() {
     const title = document.getElementById('titleInput').value;
     const description = document.getElementById('descriptionInput').value;
@@ -237,24 +314,43 @@ function savePost() {
         return;
     }
 
-    const newPost = {
-        id: Date.now().toString(),
-        slug: title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-        title,
-        description,
-        content,
-        imageUrl,
-        videoUrl: videoUrl || undefined,
-        createdAt: scheduledDate ? new Date(scheduledDate).toISOString() : new Date().toISOString(),
-        author: 'Admin',
-        likes: 0
-    };
+    if (editingPostId) {
+        // Update existing post
+        const postIndex = posts.findIndex(p => p.id === editingPostId);
+        if (postIndex !== -1) {
+            posts[postIndex] = {
+                ...posts[postIndex],
+                title,
+                description,
+                content,
+                imageUrl,
+                videoUrl: videoUrl || undefined,
+                createdAt: scheduledDate ? new Date(scheduledDate).toISOString() : posts[postIndex].createdAt,
+                slug: title.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+            };
+        }
+        alert('✅ Noticia actualizada. No olvides descargar el JSON actualizado.');
+    } else {
+        // Create new post
+        const newPost = {
+            id: Date.now().toString(),
+            slug: title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+            title,
+            description,
+            content,
+            imageUrl,
+            videoUrl: videoUrl || undefined,
+            createdAt: scheduledDate ? new Date(scheduledDate).toISOString() : new Date().toISOString(),
+            author: 'Admin',
+            likes: 0
+        };
 
-    posts.unshift(newPost);
+        posts.unshift(newPost);
+        alert('✅ Noticia creada. No olvides descargar el JSON actualizado y subirlo al repositorio.');
+    }
+
     renderPostsList();
     hideCreateForm();
-
-    alert('✅ Noticia guardada. No olvides descargar el JSON actualizado y subirlo al repositorio.');
 }
 
 function downloadJSON() {

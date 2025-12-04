@@ -1,35 +1,34 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InstaNews - Noticias con Estilo</title>
     <meta name="description" content="Plataforma de noticias con estética Instagram">
-    
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
+
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body class="bg-gray-50 dark:bg-black text-gray-900 dark:text-white">
     <!-- Mobile Container -->
     <div class="min-h-screen flex justify-center">
-        <div class="w-full max-w-md bg-white dark:bg-black min-h-screen shadow-sm border-x border-gray-200 dark:border-gray-800 relative">
-            
+        <div
+            class="w-full max-w-md bg-white dark:bg-black min-h-screen shadow-sm border-x border-gray-200 dark:border-gray-800 relative">
+
             <!-- Header -->
-            <header class="sticky top-0 z-50 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 px-4 h-14 flex items-center justify-between">
+            <header
+                class="sticky top-0 z-50 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 px-4 h-14 flex items-center justify-between">
                 <a href="index.html" class="text-xl font-bold tracking-tighter italic">InstaNews</a>
-                <div class="flex items-center gap-4">
-                    <button class="text-gray-900 dark:text-white">
-                        <i data-lucide="heart" class="w-6 h-6"></i>
-                    </button>
-                    <button class="text-gray-900 dark:text-white">
-                        <i data-lucide="bell" class="w-6 h-6"></i>
-                    </button>
-                </div>
+                <button onclick="openSettings()" class="text-gray-900 dark:text-white">
+                    <i data-lucide="settings" class="w-6 h-6"></i>
+                </button>
             </header>
 
             <!-- Feed Content -->
@@ -38,17 +37,12 @@
             </main>
 
             <!-- Bottom Navigation -->
-            <nav class="fixed bottom-0 w-full max-w-md bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800 h-12 flex items-center justify-around z-50">
+            <nav
+                class="fixed bottom-0 w-full max-w-md bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800 h-12 flex items-center justify-around z-50">
                 <a href="index.html" class="p-2 text-gray-900 dark:text-white">
                     <i data-lucide="home" class="w-6 h-6"></i>
                 </a>
-                <button class="p-2 text-gray-500 dark:text-gray-400">
-                    <i data-lucide="search" class="w-6 h-6"></i>
-                </button>
-                <a href="admin.html" class="p-2 text-gray-900 dark:text-white">
-                    <i data-lucide="plus-square" class="w-6 h-6"></i>
-                </a>
-                <button class="p-2 text-gray-500 dark:text-gray-400">
+                <button onclick="openProfile()" class="p-2 text-gray-900 dark:text-white">
                     <i data-lucide="user" class="w-6 h-6"></i>
                 </button>
             </nav>
@@ -63,9 +57,68 @@
             <div id="shareOptions" class="grid grid-cols-4 gap-4 text-center">
                 <!-- Opciones se generan dinámicamente -->
             </div>
-            <button onclick="closeShareModal()" class="w-full py-2 text-red-500 font-semibold border-t dark:border-gray-700 pt-2">
+            <button onclick="closeShareModal()"
+                class="w-full py-2 text-red-500 font-semibold border-t dark:border-gray-700 pt-2">
                 Cancelar
             </button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-zinc-900 rounded-xl w-full max-w-sm p-6 space-y-4">
+            <h3 class="text-center font-bold text-xl border-b pb-3 dark:border-gray-700">Acerca de InstaNews</h3>
+            <div class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                <p>Plataforma de noticias con diseño inspirado en redes sociales, optimizada para una experiencia de
+                    lectura rápida y compartida.</p>
+                <p>Todas tus preferencias, likes y guardados se almacenan localmente en tu dispositivo para tu
+                    privacidad.</p>
+            </div>
+            <div class="text-center pt-4 border-t dark:border-gray-700">
+                <a href="admin.html" class="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">Randy
+                    Correa</a>
+            </div>
+            <button onclick="closeSettings()" class="w-full py-2 bg-gray-200 dark:bg-gray-800 rounded-md font-semibold">
+                Cerrar
+            </button>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-zinc-900 rounded-xl w-full max-w-sm max-h-[80vh] overflow-hidden flex flex-col">
+            <div class="p-4 border-b dark:border-gray-700">
+                <h3 class="text-center font-bold text-xl">Mi Perfil</h3>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex border-b dark:border-gray-700">
+                <button onclick="switchProfileTab('liked')" id="tabLiked"
+                    class="flex-1 py-3 font-semibold border-b-2 border-black dark:border-white">
+                    Liked
+                </button>
+                <button onclick="switchProfileTab('saved')" id="tabSaved"
+                    class="flex-1 py-3 font-semibold text-gray-400 border-b-2 border-transparent">
+                    Guardados
+                </button>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 overflow-y-auto p-4">
+                <div id="likedPosts" class="grid grid-cols-3 gap-1">
+                    <!-- Liked posts grid -->
+                </div>
+                <div id="savedPosts" class="hidden grid grid-cols-3 gap-1">
+                    <!-- Saved posts grid -->
+                </div>
+            </div>
+
+            <div class="p-4 border-t dark:border-gray-700">
+                <button onclick="closeProfile()"
+                    class="w-full py-2 bg-gray-200 dark:bg-gray-800 rounded-md font-semibold">
+                    Cerrar
+                </button>
+            </div>
         </div>
     </div>
 
@@ -75,4 +128,5 @@
         lucide.createIcons();
     </script>
 </body>
+
 </html>

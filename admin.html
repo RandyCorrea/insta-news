@@ -76,6 +76,8 @@
 
                 <!-- Formulario de Creación -->
                 <div id="createForm" class="hidden space-y-4">
+                    <h2 id="formTitle" class="text-xl font-bold mb-4">Nueva Noticia</h2>
+
                     <div class="space-y-2">
                         <label class="text-sm font-medium">Título</label>
                         <input type="text" id="titleInput" class="w-full p-2 border rounded-md bg-transparent"
@@ -95,10 +97,18 @@
                     </div>
 
                     <div class="space-y-2">
-                        <label class="text-sm font-medium">Imagen (URL o Pegar)</label>
+                        <label class="text-sm font-medium">Imagen</label>
                         <p class="text-xs text-gray-500">📏 Tamaño ideal: 1080x1350px (4:5) o 1080x1080px (1:1)</p>
-                        <input type="text" id="imageInput" class="w-full p-2 border rounded-md bg-transparent"
-                            placeholder="https://... (o Ctrl+V para pegar)">
+                        <div class="flex gap-2">
+                            <input type="text" id="imageInput" class="flex-1 p-2 border rounded-md bg-transparent"
+                                placeholder="URL o Ctrl+V para pegar">
+                            <label
+                                class="px-4 py-2 bg-blue-600 text-white rounded-md cursor-pointer hover:bg-blue-700 flex items-center gap-2">
+                                <i data-lucide="upload" class="w-4 h-4"></i>
+                                Subir
+                                <input type="file" id="imageFileInput" accept="image/*" class="hidden">
+                            </label>
+                        </div>
                         <div id="imagePreview"
                             class="hidden w-full h-40 bg-gray-100 relative rounded-md overflow-hidden mt-2">
                             <img id="previewImg" src="" alt="Preview" class="w-full h-full object-cover">
@@ -106,9 +116,10 @@
                     </div>
 
                     <div class="space-y-2">
-                        <label class="text-sm font-medium">Video URL (YouTube/Vimeo)</label>
+                        <label class="text-sm font-medium">Video URL (YouTube/Vimeo/Rumble)</label>
                         <input type="text" id="videoInput" class="w-full p-2 border rounded-md bg-transparent"
                             placeholder="https://youtube.com/...">
+                        <p class="text-xs text-gray-500">💡 El video se embebe directamente en la publicación</p>
                     </div>
 
                     <div class="space-y-2">
