@@ -1,0 +1,9 @@
+1:"$Sreact.fragment"
+2:I[47257,["/insta-news/_next/static/chunks/ff1a16fafef87110.js","/insta-news/_next/static/chunks/247eb132b7f7b574.js"],"ClientPageRoot"]
+3:I[80862,["/insta-news/_next/static/chunks/f68f8df7ae2ac120.js","/insta-news/_next/static/chunks/d9d3ed094aec67db.js"],"default"]
+6:I[97367,["/insta-news/_next/static/chunks/ff1a16fafef87110.js","/insta-news/_next/static/chunks/247eb132b7f7b574.js"],"OutletBoundary"]
+7:"$Sreact.suspense"
+0:{"buildId":"ziGpbdO_4AAUD02PPYvp7","rsc":["$","$1","c",{"children":[["$","$L2",null,{"Component":"$3","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@4","$@5"]}}],[["$","script","script-0",{"src":"/insta-news/_next/static/chunks/f68f8df7ae2ac120.js","async":true}],["$","script","script-1",{"src":"/insta-news/_next/static/chunks/d9d3ed094aec67db.js","async":true}]],["$","$L6",null,{"children":["$","$7",null,{"name":"Next.MetadataOutlet","children":"$@8"}]}]]}],"loading":null,"isPartial":false}
+4:{}
+5:"$0:rsc:props:children:0:props:serverProvidedParams:params"
+8:null

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="post-title">Post - InstaNews</title>
+    <meta name="description" id="post-description" content="">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" id="og-title" content="">
+    <meta property="og:description" id="og-description" content="">
+    <meta property="og:image" id="og-image" content="">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" id="tw-title" content="">
+    <meta property="twitter:description" id="tw-description" content="">
+    <meta property="twitter:image" id="tw-image" content="">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="bg-gray-50 dark:bg-black text-gray-900 dark:text-white">
+    <div class="min-h-screen flex justify-center">
+        <div
+            class="w-full max-w-md bg-white dark:bg-black min-h-screen shadow-sm border-x border-gray-200 dark:border-gray-800 relative">
+
+            <!-- Header -->
+            <header
+                class="sticky top-0 z-50 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 px-4 h-14 flex items-center justify-between">
+                <a href="index.html" class="text-xl font-bold tracking-tighter italic">InstaNews</a>
+                <div class="flex items-center gap-4">
+                    <button class="text-gray-900 dark:text-white">
+                        <i data-lucide="heart" class="w-6 h-6"></i>
+                    </button>
+                    <button class="text-gray-900 dark:text-white">
+                        <i data-lucide="bell" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Post Content -->
+            <main id="postContent" class="pb-16 pt-4">
+                <!-- El contenido del post se carga aquí -->
+            </main>
+
+            <!-- Bottom Navigation -->
+            <nav
+                class="fixed bottom-0 w-full max-w-md bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800 h-12 flex items-center justify-around z-50">
+                <a href="index.html" class="p-2 text-gray-900 dark:text-white">
+                    <i data-lucide="home" class="w-6 h-6"></i>
+                </a>
+                <button class="p-2 text-gray-500 dark:text-gray-400">
+                    <i data-lucide="search" class="w-6 h-6"></i>
+                </button>
+                <a href="admin.html" class="p-2 text-gray-900 dark:text-white">
+                    <i data-lucide="plus-square" class="w-6 h-6"></i>
+                </a>
+                <button class="p-2 text-gray-500 dark:text-gray-400">
+                    <i data-lucide="user" class="w-6 h-6"></i>
+                </button>
+            </nav>
+
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-zinc-900 rounded-xl w-full max-w-xs p-4 space-y-4">
+            <h3 class="text-center font-semibold border-b pb-2 dark:border-gray-700">Compartir en</h3>
+            <div id="shareOptions" class="grid grid-cols-4 gap-4 text-center"></div>
+            <button onclick="closeShareModal()"
+                class="w-full py-2 text-red-500 font-semibold border-t dark:border-gray-700 pt-2">
+                Cancelar
+            </button>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        // Cargar post específico
+        loadSinglePost();
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - InstaNews</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="bg-gray-50 dark:bg-black text-gray-900 dark:text-white">
+    <div class="min-h-screen flex justify-center">
+        <div
+            class="w-full max-w-md bg-white dark:bg-black min-h-screen shadow-sm border-x border-gray-200 dark:border-gray-800">
+
+            <!-- Login Screen -->
+            <div id="loginScreen" class="flex flex-col items-center justify-center p-8 min-h-screen">
+                <div class="w-full max-w-sm space-y-8">
+                    <div class="text-center">
+                        <div
+                            class="mx-auto h-12 w-12 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center mb-4">
+                            <i data-lucide="lock" class="h-6 w-6 text-white dark:text-black"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold">Acceso Administrativo</h2>
+                        <p class="text-gray-500 mt-2">Introduce la contraseña para continuar</p>
+                    </div>
+
+                    <div id="lockoutMessage"
+                        class="hidden bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 rounded-lg flex items-start gap-3">
+                        <i data-lucide="alert-triangle"
+                            class="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5"></i>
+                        <div class="text-sm text-red-600 dark:text-red-400">
+                            <p class="font-semibold">Acceso Bloqueado</p>
+                            <p id="lockoutText">Inténtalo de nuevo más tarde.</p>
+                        </div>
+                    </div>
+
+                    <form id="loginForm" class="space-y-6">
+                        <div>
+                            <input type="password" id="passwordInput" required
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
+                                placeholder="Contraseña">
+                        </div>
+
+                        <p id="errorMessage" class="text-sm text-red-500 text-center hidden"></p>
+
+                        <button type="submit"
+                            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black dark:bg-white dark:text-black hover:bg-gray-800">
+                            Entrar
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Dashboard Screen -->
+            <div id="dashboardScreen" class="hidden p-4 pb-20">
+                <div class="flex items-center justify-between mb-6">
+                    <h1 class="text-2xl font-bold">Panel de Noticias</h1>
+                    <div class="flex gap-2">
+                        <button id="downloadBtn" class="p-2 bg-green-600 text-white rounded-full hover:bg-green-700"
+                            title="Descargar JSON">
+                            <i data-lucide="download" class="w-5 h-5"></i>
+                        </button>
+                        <button id="createBtn" class="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700">
+                            <i data-lucide="plus" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lista de Posts -->
+                <div id="postsList" class="space-y-4">
+                    <!-- Posts se cargan aquí -->
+                </div>
+
+                <!-- Formulario de Creación -->
+                <div id="createForm" class="hidden space-y-4">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Título</label>
+                        <input type="text" id="titleInput" class="w-full p-2 border rounded-md bg-transparent"
+                            placeholder="Título de la noticia">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Descripción Corta</label>
+                        <textarea id="descriptionInput" class="w-full p-2 border rounded-md bg-transparent h-20"
+                            placeholder="Resumen para el feed..."></textarea>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Contenido Completo</label>
+                        <textarea id="contentInput" class="w-full p-2 border rounded-md bg-transparent h-32"
+                            placeholder="Texto completo de la noticia..."></textarea>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Imagen (URL o Pegar)</label>
+                        <p class="text-xs text-gray-500">📏 Tamaño ideal: 1080x1350px (4:5) o 1080x1080px (1:1)</p>
+                        <input type="text" id="imageInput" class="w-full p-2 border rounded-md bg-transparent"
+                            placeholder="https://... (o Ctrl+V para pegar)">
+                        <div id="imagePreview"
+                            class="hidden w-full h-40 bg-gray-100 relative rounded-md overflow-hidden mt-2">
+                            <img id="previewImg" src="" alt="Preview" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Video URL (YouTube/Vimeo)</label>
+                        <input type="text" id="videoInput" class="w-full p-2 border rounded-md bg-transparent"
+                            placeholder="https://youtube.com/...">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Programar Publicación</label>
+                        <input type="datetime-local" id="scheduleInput"
+                            class="w-full p-2 border rounded-md bg-transparent">
+                    </div>
+
+                    <div class="flex gap-3 pt-4">
+                        <button id="cancelBtn" class="flex-1 py-2 border border-gray-300 rounded-md">Cancelar</button>
+                        <button id="saveBtn" class="flex-1 py-2 bg-blue-600 text-white rounded-md font-semibold">Guardar
+                            Noticia</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
